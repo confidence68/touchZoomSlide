@@ -1,0 +1,22 @@
+﻿{
+    "propertyDetail": {
+        "viewImage": [
+            {
+                "url": "../resource/images/img.png",
+                "des": ""
+            }
+        ],
+        "floorImage": [
+            {
+                "url": "../resource/images/imgs.png",
+                "des": ""
+            }
+        ],
+        "docImage": [
+            {
+                "url": "../resource/images/topslide.jpg",
+                "des": ""
+            }
+        ]
+    }
+}

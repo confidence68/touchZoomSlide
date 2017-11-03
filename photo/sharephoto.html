@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="format-detection" content="telephone=no,email=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-touch-fullscreen" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta content="相册" name="keywords" />
+    <meta content="相册" itemprop="description" name="description" />
+    <title>相册</title>
+    <link rel="stylesheet" href="../resource/css/common.css">
+    <script src="../resource/js/common.js"></script>
+</head>
+
+<body class="heightbody">
+    <div class="header">
+        <div class="title" id="title">0/0</div>
+    </div>
+    <section class="photo-body">
+        <div class="container">
+            <ul class="types" id="topsildeinner">
+                <li class="items">
+                    <img src="../resource/images/detail_750X420.png" data-src="../resource/images/imgs.png" alt="" jslazy> </li>
+            </ul>
+        </div>
+    </section>
+
+    <script src="../resource/js/jquery-3.2.1.min.js"></script>
+    <script src="../resource/js/jquery.photo.album.js"></script>
+    <script>
+        /* 通过图片下标设置标题 */
+        function getTitle(index) {
+            var _cur = 1;
+            var _sum = 1;
+            var _flag = false;
+            for (var idx = 0; idx < $('.types').length; idx++) {
+                for (var i = 0; i < $('.types').eq(idx).find('.items').length; i++) {
+                    if (index === i) {
+                        _flag = true;
+                        _cur = i + 1;
+                        _sum = $('.types').eq(idx).find('.items').length;
+                    }
+                }
+                if (_flag) {
+                    break;
+                } else {
+                    index = index - $('.types').eq(idx).find('.items').length;
+                }
+            }
+            $('.title').text(_cur + '/' + _sum);
+        };
+
+        function getQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]);
+            return null;
+        }
+
+        $(function () {
+            var index = getQueryString("imagenum"),
+                pageid = getQueryString("pageid");
+            //if (pageid) {
+                //页面绑定
+                $.ajax({
+                    url: "data.json",
+                    type: "GET",
+					dataType:"json",
+                    error: function (error) {
+                        console.log(error);
+                        alert("接口错误！");
+                    },
+                    success: function (res) {
+                        var pageData = res,
+                            topsildeArray = [];
+                        if (pageData) {
+                            if (pageData.propertyDetail.viewImage) {
+                                var newimgArray = pageData.propertyDetail.viewImage.concat(pageData.propertyDetail.floorImage, pageData.propertyDetail.docImage);
+                                var imgnums = newimgArray.length;
+                                newimgArray.forEach(function (item, index) {
+                                    topsildeArray[index] =
+                                        ' <li class="items"> <img src="../resource/images/detail_750X420.png" data-src="' +
+                                        item.url + '" alt="" jslazy> </li>'
+                                })
+                                $("#title").html("1/" + imgnums);
+                                $("#topsildeinner").html(topsildeArray.join(""));
+                                var photo = $('.photo-body').phototAlbum({
+                                    width: $(window).width(),
+                                    height: $(window).height(),
+                                    lazyLoad: true,
+                                    pagination: false,
+                                    callback: function (i) {
+                                        getTitle(i);
+                                    }
+                                });
+                                if (index) {
+                                    photo.goto(parseInt(index - 1));
+                                }
+                            }
+                        }
+                    }
+                })
+            //}
+
+
+
+        });
+    </script>
+</body>
+
+</html>
